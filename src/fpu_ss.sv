@@ -197,14 +197,14 @@ module fpu_ss
   assign prd_req.q_instr_data = x_issue_req_i.instr;
   assign x_issue_resp_o.accept = prd_rsp.p_accept;
   assign x_issue_resp_o.writeback = prd_rsp.p_writeback;
-  assign x_issue_resp_o.loadstore = prd_rsp.p_is_mem_op;
-  assign x_issue_resp_o.float = '0;
   assign x_issue_resp_o.dualwrite = '0;
   assign x_issue_resp_o.dualread  = '0;
+  assign x_issue_resp_o.loadstore = prd_rsp.p_is_mem_op;
+  assign x_issue_resp_o.ecswrite = '0;
   assign x_issue_resp_o.exc = '0;
 
   // input buffer signal assignment
-  assign in_buf_push_valid = x_issue_valid_i & x_issue_ready_o;
+  assign in_buf_push_valid = x_issue_valid_i & x_issue_ready_o & x_issue_resp_o.accept;
   assign in_buf_push_data.rs = x_issue_req_i.rs;
   assign in_buf_push_data.instr_data = x_issue_req_i.instr;
   assign in_buf_push_data.id = x_issue_req_i.id;
