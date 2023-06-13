@@ -65,6 +65,7 @@ module fpu_ss_controller
     // Memory Request/Repsonse Interface
     output logic x_mem_valid_o,
     input  logic x_mem_ready_i,
+    input  logic x_mem_req_id_i,
     output logic x_mem_req_we_o,
     output logic x_mem_req_spec_o,
     output logic x_mem_req_last_o,
@@ -195,7 +196,10 @@ module fpu_ss_controller
   always_comb begin
     x_mem_valid_o = 1'b0;
     if ((is_load_i | is_store_i) & ~dep_rs_o & ~dep_rd_o & in_buf_pop_valid_i & mem_push_ready_i
-       & (x_issue_ready_i | INPUT_BUFFER_DEPTH)) begin
+       & (x_issue_ready_i | INPUT_BUFFER_DEPTH)
+       & (id_scoreboard_q[x_mem_req_id_i] | (x_commit_valid_i
+                                             & (x_commit_i.id == x_mem_req_id_i)
+                                             & ~x_commit_i.commit_kill)) ) begin
       x_mem_valid_o = 1'b1;
     end
   end
@@ -235,7 +239,7 @@ module fpu_ss_controller
   assign x_result_hs = x_result_ready_i & x_result_valid_o;
   always_comb begin
     x_result_valid_o = 1'b0;
-    if (fpu_out_valid_i | csr_instr_i) begin
+    if (fpu_out_valid_i | csr_instr_i | x_mem_result_valid_i) begin
       x_result_valid_o = 1'b1;
     end
   end

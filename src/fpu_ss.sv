@@ -438,6 +438,7 @@ module fpu_ss
       // Memory Request/Repsonse Interface
       .x_mem_valid_o    (x_mem_valid_o),
       .x_mem_ready_i    (x_mem_ready_i),
+      .x_mem_req_id_i   (x_mem_req_o.id),
       .x_mem_req_we_o   (x_mem_req_o.we),
       .x_mem_req_spec_o (x_mem_req_o.spec),
       .x_mem_req_last_o (x_mem_req_o.last),
