@@ -65,7 +65,7 @@ module fpu_ss_controller
     // Memory Request/Repsonse Interface
     output logic x_mem_valid_o,
     input  logic x_mem_ready_i,
-    input  logic x_mem_req_id_i,
+    input  logic [X_ID_WIDTH-1:0] x_mem_req_id_i,
     output logic x_mem_req_we_o,
     output logic x_mem_req_spec_o,
     output logic x_mem_req_last_o,
