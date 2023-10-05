@@ -53,6 +53,8 @@ module fpu_ss
     parameter                                 INPUT_BUFFER_DEPTH = 0,
     parameter                                 OUT_OF_ORDER       = 1,
     parameter                                 FORWARDING         = 1,
+    // PulpDivSqrt = 0 enables T-head-based DivSqrt unit. Supported only for FP32-only instances of Fpnew
+    parameter logic                           PulpDivsqrt        = 1'b1,
     parameter fpnew_pkg::fpu_features_t       FPU_FEATURES       = fpu_ss_pkg::FPU_FEATURES,
     parameter fpnew_pkg::fpu_implementation_t FPU_IMPLEMENTATION = fpu_ss_pkg::FPU_IMPLEMENTATION
 ) (
@@ -137,7 +139,6 @@ module fpu_ss
   logic                                           is_store;
   logic                                           is_load;
   ls_size_e                                       ls_size;
-  logic                                           error;
 
   // forwarding and dependency
   logic                          [ 2:0]           fpu_fwd;
@@ -247,12 +248,12 @@ module fpu_ss
   // load and store address calculation for memory instructions
   always_comb begin
     if (~x_mem_req_o.we) begin
-      offset = instr[31:20];
+      offset = 32'($unsigned(instr[31:20]));
       if (instr[31]) begin
         offset = {20'b1111_1111_1111_1111_1111, instr[31:20]};
       end
     end else begin
-      offset = {instr[31:25], instr[11:7]};
+      offset = 32'($unsigned({instr[31:25], instr[11:7]}));
       if (instr[31]) begin
         offset = {20'b1111_1111_1111_1111_1111, instr[31:25], instr[11:7]};
       end
@@ -614,6 +615,7 @@ module fpu_ss
   //  FPnew
   // ------
   fpnew_top #(
+      .PulpDivsqrt   (PulpDivsqrt),
       .Features      (FPU_FEATURES),
       .Implementation(FPU_IMPLEMENTATION),
       .TagType       (fpu_tag_t)
@@ -629,6 +631,7 @@ module fpu_ss
       .int_fmt_i     (fpnew_pkg::int_format_e'(int_fmt)),
       .vectorial_op_i(vectorial_op),
       .tag_i         (fpu_tag_in),
+      .simd_mask_i   ('0),
       .in_valid_i    (fpu_in_valid),
       .in_ready_o    (fpu_in_ready),
       .flush_i       (1'b0),
@@ -640,6 +643,7 @@ module fpu_ss
       .busy_o        (fpu_busy)
   );
 
+
   // -------------------------
   //  Result Interface Signals
   // -------------------------
@@ -649,7 +653,7 @@ module fpu_ss
   always_comb begin
     x_result_o.data = fpu_result;
     if (csr_wb & ~fpu_out_valid & csr_wb & ~fpu_out_valid) begin
-      x_result_o.data = csr_wb_addr;
+      x_result_o.data = 32'($unsigned(csr_wb_addr));
     end
   end
 

@@ -109,13 +109,13 @@ package fpu_ss_pkg;
 
   // Compressed predecoder request type
   typedef struct packed {
-    logic [16:0] comp_instr;
+    logic [15:0] comp_instr;
   } comp_prd_req_t;
 
   // Compressed predecoder response type
   typedef struct packed {
     logic        accept;
-    logic [32:0] decomp_instr;
+    logic [31:0] decomp_instr;
   } comp_prd_rsp_t;
 
   // Predecoder request type
