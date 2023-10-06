@@ -33,7 +33,7 @@ module fpu_ss_regfile (
 
   always_comb begin : we_decoder
     for (int unsigned i = 0; i < NumWords; i++) begin
-      if (waddr_i == i) we_dec[i] = we_i;
+      if (waddr_i == i[4:0]) we_dec[i] = we_i;
       else we_dec[i] = 1'b0;
     end
   end
