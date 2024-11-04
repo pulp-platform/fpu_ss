@@ -54,7 +54,7 @@ module fpu_ss
     parameter                                 OUT_OF_ORDER       = 1,
     parameter                                 FORWARDING         = 1,
     // PulpDivSqrt = 0 enables T-head-based DivSqrt unit. Supported only for FP32-only instances of Fpnew
-    parameter logic                           PulpDivsqrt        = 1'b1,
+    parameter logic                           PulpDivsqrt        = 1'b0,
     parameter fpnew_pkg::fpu_features_t       FPU_FEATURES       = fpu_ss_pkg::FPU_FEATURES,
     parameter fpnew_pkg::fpu_implementation_t FPU_IMPLEMENTATION = fpu_ss_pkg::FPU_IMPLEMENTATION
 ) (
