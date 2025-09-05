@@ -194,9 +194,11 @@ package fpu_ss_pkg;
   parameter int unsigned C_LAT_FP16 = 'd1; // set to 1 to mimic cv32e40p core internal
   parameter int unsigned C_LAT_FP16ALT = 'd1; // set to 1 to mimic cv32e40p core internal
   parameter int unsigned C_LAT_FP8 = 'd1; // set to 1 to break critical path
+  parameter int unsigned C_LAT_FP8ALT = 'd1; 
   parameter int unsigned C_LAT_DIVSQRT = 'd1;  // divsqrt post-processing pipe
   parameter int unsigned C_LAT_CONV = 'd1; // set to 1 to mimic cv32e40p core internal
   parameter int unsigned C_LAT_NONCOMP = 'd1; // set to 1 to mimic cv32e40p core internal
+  parameter int unsigned C_LAT_DOTP = 'd1;
 
   // General FPU-specific defines
 
@@ -221,19 +223,21 @@ package fpu_ss_pkg;
 
   // Implementation (number of registers etc)
   parameter fpnew_pkg::fpu_implementation_t FPU_IMPLEMENTATION = '{
-  PipeRegs:  '{// FP32, FP64, FP16, FP8, FP16alt
+  PipeRegs:  '{// FP32, FP64, FP16, FP8, FP16alt, FP8alt
       '{
-          fpu_ss_pkg::C_LAT_FP32, fpu_ss_pkg::C_LAT_FP64, fpu_ss_pkg::C_LAT_FP16, fpu_ss_pkg::C_LAT_FP8, fpu_ss_pkg::C_LAT_FP16ALT
+          fpu_ss_pkg::C_LAT_FP32, fpu_ss_pkg::C_LAT_FP64, fpu_ss_pkg::C_LAT_FP16, fpu_ss_pkg::C_LAT_FP8, fpu_ss_pkg::C_LAT_FP16ALT, fpu_ss_pkg::C_LAT_FP8ALT
       },  // ADDMUL
       '{default: fpu_ss_pkg::C_LAT_DIVSQRT},  // DIVSQRT
       '{default: fpu_ss_pkg::C_LAT_NONCOMP},  // NONCOMP
-      '{default: fpu_ss_pkg::C_LAT_CONV}
+      '{default: fpu_ss_pkg::C_LAT_CONV}, // CONV
+      '{default: fpu_ss_pkg::C_LAT_DOTP}  // DOTP
   },  // CONV
   UnitTypes: '{
       '{default: fpnew_pkg::MERGED},  // ADDMUL
       '{default: fpnew_pkg::MERGED},  // DIVSQRT
       '{default: fpnew_pkg::PARALLEL},  // NONCOMP
-      '{default: fpnew_pkg::MERGED}
+      '{default: fpnew_pkg::MERGED},  // CONV
+      '{default: fpnew_pkg::DISABLED}  // DOTP
   },  // CONV
   PipeConfig: fpnew_pkg::BEFORE};
 
