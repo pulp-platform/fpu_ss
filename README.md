@@ -5,47 +5,48 @@ The implementation is taylored to cv32e40p (formerly known as RI5CY). This means
 The coprocessors main module is named `fpu_ss` and can be found in [fpu_ss.sv](src/fpu_ss.sv "fpu_ss.sv"). Below, the instantiation template is given and the parameters are described.
 ### Integration Template
 	fpu_ss #(
-	    .PULP_ZFINX           ( 0 ),
-	    .INPUT_BUFFER_DEPTH   ( 0 ),
-	    .OUT_OF_ORDER         ( 1 ),
-	    .FORWARDING           ( 1 ),
-	    .FPU_FEATURES         (   ),
-	    .FPU_IMPLEMENTATION   (   )
+	    .PULP_ZFINX          		 ( 0 ),
+	    .INPUT_BUFFER_DEPTH  		 ( 0 ),
+		.INPUT_BUFFER_FALL_THROUGH   ( 1 ),
+	    .OUT_OF_ORDER        		 ( 1 ),
+	    .FORWARDING          		 ( 1 ),
+	    .FPU_FEATURES         		 (   ),
+	    .FPU_IMPLEMENTATION          (   )
 	) fpu_ss_i (
 	    // clock and reset
-	    .clk_i                (),
-	    .rst_ni               (),
+	    .clk_i               		 (),
+	    .rst_ni               	     (),
 
 	    // Compressed Interface
-	    .x_compressed_valid_i (),
-	    .x_compressed_ready_o (),
-	    .x_compressed_req_i   (),
-	    .x_compressed_resp_o  (),
+	    .x_compressed_valid_i 		 (),
+	    .x_compressed_ready_o 		 (),
+	    .x_compressed_req_i   		 (),
+	    .x_compressed_resp_o  		 (),
 
 	    // Issue Interface
-	    .x_issue_valid_i      (),
-	    .x_issue_ready_o      (),
-	    .x_issue_req_i        (),
-	    .x_issue_resp_o       (),
+	    .x_issue_valid_i      		 (),
+	    .x_issue_ready_o      		 (),
+	    .x_issue_req_i        		 (),
+	    .x_issue_resp_o       		 (),
 
 	    // Commit Interface
-	    .x_commit_valid_i     (),
-	    .x_commit_i           (),
+	    .x_commit_valid_i     		 (),
+	    .x_commit_i           		 (),
 
 	    // Memory Request/Response Interface
-	    .x_mem_valid_o        (),
-	    .x_mem_ready_i        (),
-	    .x_mem_req_o          (),
-	    .x_mem_resp_i         (),
+	    .x_mem_valid_o        		 (),
+	    .x_mem_ready_i        		 (),
+	    .x_mem_req_o          		 (),
+	    .x_mem_resp_i         		 (),
 
 	    // Memory Result Interface
-	    .x_mem_result_valid_i (),
-	    .x_mem_result_i       (),
+	    .x_mem_result_valid_i 		 (),
+	    .x_mem_result_i       		 (),
 
 	    // Result Interface
-	    .x_result_valid_o     (),
-	    .x_result_ready_i     (),
-	    .x_result_o           ()
+	    .x_result_valid_o     		 (),
+	    .x_result_ready_i     		 (),
+	    .x_result_o           		 ()
 	);
 
 ### Dependencies
@@ -58,14 +59,15 @@ to load the FPnew or use
 to clone the repository with the Fpnew.
 ### Parameters
 
-| Parameter Name       | Values                                                                                          | Description                                  | Default |
-| -------------------- | ----------------------------------------------------------------------------------------------- | -------------------------------------------- | ------- |
-| `PULP_ZFINX`         | {0,1}                                                                                           | Use F or zfinx extension                     | 0       |
-| `INPUT_BUFFER_DEPTH` | {0, ... , 2^32-1}                                                                               | Input buffer depth                           | 0       |
-| `OUT_OF_ORDER`       | {0, 1}                                                                                          | Enabling out-of-order execution              | 1       |
-| `FORWARDING`         | {0, 1}                                                                                          | Enabling forwarding inside the fpu subsystem | 1       |
-| `FPU_FEATURES`       | see [FPnew](https://github.com/pulp-platform/fpnew/tree/develop/docs/README.md#parameters) docs | -                                            | -       |
-| `FPU_IMPLEMENTATION` | see [FPnew](https://github.com/pulp-platform/fpnew/tree/develop/docs/README.md#parameters) docs | -                                            | -       |
+| Parameter Name              | Values                                                                                          | Description                                  | Default |
+| --------------------------- | ----------------------------------------------------------------------------------------------- | -------------------------------------------- | ------- |
+| `PULP_ZFINX`                | {0,1}                                                                                           | Use F or zfinx extension                     | 0       |
+| `INPUT_BUFFER_DEPTH`        | {0, ... , 2^32-1}                                                                               | Input buffer depth                           | 0       |
+| `INPUT_BUFFER_FALL_THROUGH` | {0,1}                                                                                           | Input buffer fall through enable             | 1       |
+| `OUT_OF_ORDER`              | {0, 1}                                                                                          | Enabling out-of-order execution              | 1       |
+| `FORWARDING`                | {0, 1}                                                                                          | Enabling forwarding inside the fpu subsystem | 1       |
+| `FPU_FEATURES`              | see [FPnew](https://github.com/pulp-platform/fpnew/tree/develop/docs/README.md#parameters) docs | -                                            | -       |
+| `FPU_IMPLEMENTATION`        | see [FPnew](https://github.com/pulp-platform/fpnew/tree/develop/docs/README.md#parameters) docs | -                                            | -       |
 
 
 #### Extended parameter descriptions
