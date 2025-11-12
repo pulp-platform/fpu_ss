@@ -10,38 +10,41 @@
 //
 // Description: Top level Module of the FPU subsystem
 //
-// Parameters:  PULP_ZFINX:         Enable support for "Zfinx" standard extension (and thereby removing support for
-//                                  "F" standard extension)
+// Parameters:  PULP_ZFINX:               Enable support for "Zfinx" standard extension (and thereby removing support for
+//                                        "F" standard extension)
 //
-//              INPUT_BUFFER_DEPTH: Set depth of the FIFO input buffer. If parameter is set to 0, no buffer will be
-//                                  instantiated
+//              INPUT_BUFFER_DEPTH:       Set depth of the FIFO input buffer. If parameter is set to 0, no buffer will be
+//                                        instantiated
 //
-//              OUT_OF_ORDER:       Enable out-of-order execution for instructions that go through
-//                                  the FPnew.
-//                                  For example with OUT_OF_ORDER = 1
-//                                      fdiv.s fa1, fa2, fa3 // suppose takes 3 cycles
-//                                      fmul.s fa4, fa5, fa6 // suppose takes 1 cycles
-//                                      fmul.s fa2, fa5, fa6 // suppose takes 1 cycles
-//                                      fmul.s fa3, fa5, fa6 // suppose takes 1 cycles
-//                                  --> This sequence takes 4 clock cycles
-//                                  With OUT_OF_ORDER this instruction sequence would take 5 clock cycles
-//                                  Possible values for this parameter are 0 and 1
+//              OUT_OF_ORDER:             Enable out-of-order execution for instructions that go through
+//                                        the FPnew.
+//                                        For example with OUT_OF_ORDER = 1
+//                                            fdiv.s fa1, fa2, fa3 // suppose takes 3 cycles
+//                                            fmul.s fa4, fa5, fa6 // suppose takes 1 cycles
+//                                            fmul.s fa2, fa5, fa6 // suppose takes 1 cycles
+//                                            fmul.s fa3, fa5, fa6 // suppose takes 1 cycles
+//                                        --> This sequence takes 4 clock cycles
+//                                        With OUT_OF_ORDER this instruction sequence would take 5 clock cycles
+//                                        Possible values for this parameter are 0 and 1
 //
-//             FORWARDING:          Enable forwarding of floating-point results in the subsystem.
-//                                  For examle take this sequence:
-//                                      fmul.s fa4, fa5, fa6 // suppose takes 1 cycles
-//                                      fmul.s fa1, fa4, fa6 // suppose takes 1 cycles
-//                                  There is a source register dependency for the second instruction on the
-//                                  first instructions result. With FORWARDING = 1 this sequence takes 2 clock cycles
-//                                  while with FORWARDING = 0 this sequence takes 3 clock cycles.
+//             FORWARDING:                Enable forwarding of floating-point results in the subsystem.
+//                                        For examle take this sequence:
+//                                            fmul.s fa4, fa5, fa6 // suppose takes 1 cycles
+//                                            fmul.s fa1, fa4, fa6 // suppose takes 1 cycles
+//                                        There is a source register dependency for the second instruction on the
+//                                        first instructions result. With FORWARDING = 1 this sequence takes 2 clock cycles
+//                                        while with FORWARDING = 0 this sequence takes 3 clock cycles.
 //
-//             FPU_FEATURES:        Parameter to configure the FPnew. The subsystem was designed for the configuration found here:
-//                                  https://github.com/moimfeld/cv32e40p/blob/x-interface/example_tb/core/fpu_ss/fpu_ss_pkg.sv
-//                                  Other configurations might not work
+//             FPU_FEATURES:              Parameter to configure the FPnew. The subsystem was designed for the configuration found here:
+//                                        https://github.com/moimfeld/cv32e40p/blob/x-interface/example_tb/core/fpu_ss/fpu_ss_pkg.sv
+//                                        Other configurations might not work
 //
-//             FPU_IMPLEMENTATION:  Parameter to configure the FPnew. The subsystem was designed for the configuration found here:
-//                                  https://github.com/moimfeld/cv32e40p/blob/x-interface/example_tb/core/fpu_ss/fpu_ss_pkg.sv
-//                                  Other configurations might not work
+//             FPU_IMPLEMENTATION:        Parameter to configure the FPnew. The subsystem was designed for the configuration found here:
+//                                        https://github.com/moimfeld/cv32e40p/blob/x-interface/example_tb/core/fpu_ss/fpu_ss_pkg.sv
+//                                        Other configurations might not work
+//
+//             INPUT_BUFFER_FALL_THROUGH: Set depth of the FIFO input buffer FALL_THROUGH. If INPUT_BUFFER_DEPTH is set to 0, this
+//                                        parameter doesn't have any effect
 //
 // Contributor: Moritz Imfeld <moimfeld@student.ethz.ch>
 //              Davide Schiavone <davide@openhwgroup.org>
@@ -49,14 +52,15 @@
 module fpu_ss
     import fpu_ss_pkg::*;
 #(
-    parameter                                 PULP_ZFINX         = 0,
-    parameter                                 INPUT_BUFFER_DEPTH = 0,
-    parameter                                 OUT_OF_ORDER       = 1,
-    parameter                                 FORWARDING         = 1,
+    parameter                                 PULP_ZFINX                = 0,
+    parameter                                 INPUT_BUFFER_DEPTH        = 0,
+    parameter bit                             INPUT_BUFFER_FALL_THROUGH = 1,
+    parameter                                 OUT_OF_ORDER              = 1,
+    parameter                                 FORWARDING                = 1,
     // PulpDivSqrt = 0 enables T-head-based DivSqrt unit. Supported only for FP32-only instances of Fpnew
-    parameter logic                           PulpDivsqrt        = 1'b0,
-    parameter fpnew_pkg::fpu_features_t       FPU_FEATURES       = fpu_ss_pkg::FPU_FEATURES,
-    parameter fpnew_pkg::fpu_implementation_t FPU_IMPLEMENTATION = fpu_ss_pkg::FPU_IMPLEMENTATION
+    parameter logic                           PulpDivsqrt               = 1'b0,
+    parameter fpnew_pkg::fpu_features_t       FPU_FEATURES              = fpu_ss_pkg::FPU_FEATURES,
+    parameter fpnew_pkg::fpu_implementation_t FPU_IMPLEMENTATION        = fpu_ss_pkg::FPU_IMPLEMENTATION
 ) (
     // Clock and Reset
     input logic clk_i,
@@ -287,7 +291,7 @@ module fpu_ss
   generate
     if (INPUT_BUFFER_DEPTH > 0) begin : gen_input_stream_fifo
       stream_fifo #(
-          .FALL_THROUGH(1),
+          .FALL_THROUGH(INPUT_BUFFER_FALL_THROUGH),
           .DATA_WIDTH  (32),
           .DEPTH       (INPUT_BUFFER_DEPTH),
           .T           (offloaded_data_t)
