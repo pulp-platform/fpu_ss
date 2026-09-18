@@ -557,7 +557,11 @@ module fpu_ss
     always_comb begin
       unique case (op_select[i])
         None: begin
-          fpu_operands_dec[i] = '1;
+          // Unused operand slots must not look like a NaN: the PULP divsqrt
+          // returns NaN whenever operand b is one, even for sqrt, where b is
+          // meaningless (NaN_b_SI is not gated on Div_enable_SI in
+          // norm_div_sqrt_mvp.sv, unlike Inf_b_SI and Zero_b_SI).
+          fpu_operands_dec[i] = '0;
         end
         AccBus: begin
           fpu_operands_dec[i] = int_operands[i];
