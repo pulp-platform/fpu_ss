@@ -656,8 +656,8 @@ module fpu_ss
 
   always_comb begin
     x_result_o.data = fpu_result;
-    if (csr_wb & ~fpu_out_valid & csr_wb & ~fpu_out_valid) begin
-      x_result_o.data = 32'($unsigned(csr_wb_addr));
+    if (csr_wb & ~fpu_out_valid) begin
+      x_result_o.data = csr_rdata;
     end
   end
 
