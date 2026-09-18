@@ -221,7 +221,12 @@ module fpu_ss_controller
   // -----
   // FPnew
   // -----
-  assign fpu_out_ready_o = ~x_mem_result_valid_i;
+  // The result must stay in place until the core has taken it. A core such as
+  // cv32e40x only asserts x_result_ready_i once the offloaded instruction has
+  // reached its writeback stage, so popping FPnew regardless of the result
+  // handshake silently drops the result whenever an earlier instruction still
+  // occupies that stage.
+  assign fpu_out_ready_o = ~x_mem_result_valid_i & x_result_ready_i;
   always_comb begin
     fpu_in_valid_o = 1'b0;
     if (use_fpu_i & in_buf_pop_valid_i & (id_scoreboard_q[fpu_in_id_i] | ((x_commit_i.id == fpu_in_id_i)
